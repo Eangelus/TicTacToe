@@ -1,0 +1,314 @@
+// Bernecker Thomas
+// 31 März 2021
+// Tic Tac Toe für die Console
+
+
+
+// Imports
+
+#include <iostream>
+#include <stdlib.h>
+#include <time.h>
+
+using namespace std;
+
+
+// Funktionen 
+void singleplayer();
+void multiplayer();
+void help();
+void AI();
+
+// Variablen
+bool checkFull();
+bool winCheck(char);
+char keyInput(bool x);
+
+
+char spielfeld[10];
+
+// Consolse Clearen
+
+void clearConsole() {
+
+    system("cls");
+}
+
+
+
+// zeichnen des spielfeldes
+
+void drawSpielfeld() {
+    clearConsole();
+    cout << "\n\n"
+        << "  " << spielfeld[1] << " | " << spielfeld[2] << " | " << spielfeld[3] << endl
+        << " ---|---|---" << endl
+        << "  " << spielfeld[4] << " | " << spielfeld[5] << " | " << spielfeld[6] << endl
+        << " ---|---|---" << endl
+        << "  " << spielfeld[7] << " | " << spielfeld[8] << " | " << spielfeld[9] << endl;
+}
+
+
+// spielfeld restet
+
+void resetSpielfeld() {
+
+    for (int i = 0; i < 10; i++) {
+        spielfeld[i] = ' ';
+    }
+    
+
+}
+
+
+// einfache menu schleife 
+void menu() {
+
+    while (true) {
+
+        resetSpielfeld();
+        char inputMenu;
+        cout << "\n\n"
+            << "Menu: \n\n"
+            << "1: Singleplayer \n"
+            << "2: Multiplayer \n"
+            << "3: Help \n"
+            << "4: Quit \n\n\n"
+            << "Eingabe:  ";
+        cin >> inputMenu;
+
+        if (inputMenu == '1') singleplayer();
+        else if (inputMenu == '2') multiplayer();
+        else if (inputMenu == '3' ) help();
+        else if (inputMenu == '4' || inputMenu == 'q') return;
+        else {clearConsole(); cout << "Falsche Eingabe!"; }
+        
+    }
+
+}
+
+
+void singleplayer() {
+
+    clearConsole();
+
+    char input = ' ';
+    
+
+    while (true)
+    {
+        drawSpielfeld();
+
+
+        if (winCheck('O')) {
+            cout << "\nDer Npc hat Gewonnen!\n\n";
+            return;
+        }
+        if (checkFull()) {
+            cout << "\nUnentschieden!\n\n";
+            return;
+        }
+        input == keyInput(true);
+
+        drawSpielfeld();
+        
+        if( input == 'q'){
+            return;
+        }
+
+        if (winCheck('X')) {
+            cout << "\nDer Spieler hat Gewonnen!\n\n";
+            return;
+        }
+        AI();
+
+    }
+
+
+}
+
+
+// abwechselnde eingabe und schleife zur gewinn überprüfung
+
+void multiplayer() {
+    char input = ' ';
+    bool player1Turn = true;
+    while (true) {
+        
+        drawSpielfeld();
+        if (winCheck('X')) {
+            cout << "\nSpieler 1 hat Gewonnen!\n\n";
+            return;
+        }
+        else if (winCheck('O')) {
+            cout << "\nSpieler 2 hat Gewonnen!\n\n";
+                return;
+        }
+        if (checkFull()) {
+            cout << "\nUnentschieden!\n\n";
+        }
+        input == keyInput(player1Turn);
+            if (input == 'q') {
+                return;
+            }
+        player1Turn = !player1Turn;
+    }
+
+}
+
+
+// Die eingabe des spielers abwechselnd
+
+
+char keyInput(bool x){
+    while (true) {
+
+        cout << "\n Eingabe:\n";
+        char input = ' ';
+        cin >> input;
+        int inputNumber = input - '0';
+        if (inputNumber > 9 || inputNumber < 1) {
+
+            if (input == 'q')
+                return input;
+            else
+                cout << "\nFalsche Eingabe!";
+        }
+        else if (spielfeld[inputNumber] != ' ') {
+            cout << "\nDas Feld ist belegt!";
+        }
+        else {
+            if (x)
+                spielfeld[inputNumber] = 'X';
+            else
+                spielfeld[inputNumber] = 'O';
+            return input;
+        }
+    }
+}
+
+
+// einer cout für die hilfe
+void help() {
+
+    clearConsole();
+    cout << "\n\n HELP \n\n Geben sie die Zaheln von 1 bis 9 zum belegen der Spielfelder ein. \n\n";
+    return;
+}
+
+
+
+
+
+
+
+// Abfrage der gewinregeln
+
+bool winCheck(char sign) {
+    // vertikale 1, 2 ,3                                                        4,5,6                                                                     7,8,9                                                                 hori 1,4,7                                                               2,5,8                                                                       3,6,9                                                             diagonale 1,5,9                                                           3,5,7
+    if (spielfeld[1] == sign && spielfeld[2] == sign && spielfeld[3] == sign || spielfeld[4] == sign && spielfeld[5] == sign && spielfeld[6] == sign || spielfeld[7] == sign && spielfeld[8] == sign && spielfeld[9] == sign || spielfeld[1] == sign && spielfeld[4] == sign && spielfeld[7] == sign || spielfeld[2] == sign && spielfeld[5] == sign && spielfeld[8] == sign || spielfeld[3] == sign && spielfeld[6] == sign && spielfeld[9] == sign || spielfeld[1] == sign && spielfeld[5] == sign && spielfeld[9] == sign || spielfeld[3] == sign && spielfeld[5] == sign && spielfeld[7] == sign)
+    {
+    return true;
+        }
+    return false;
+}
+
+
+// funktions schleifen um prüfen ob das spielfeld voll ist
+
+
+bool checkFull() {
+
+    for (int i = 1; i <= 9; i++) {
+        if (spielfeld[i] == ' ') {
+            return false;
+        }
+    }
+    return true;
+}
+
+
+void AI(){
+
+    if (checkFull()) {
+
+        return;
+    }
+srand(time(nullptr));
+
+
+
+    // testen ob spieler gewinnen kann
+    for (int i = 1; i < 10; i++) {
+        if (spielfeld[i] == ' ') {
+
+            spielfeld[i] = 'O';
+            if (winCheck('O')) {
+                return;
+            }
+            else {
+                spielfeld[i] = ' ';
+            }
+        }
+
+
+    }
+
+
+
+    // testen ob man ihn stopen kann
+    for (int i = 1; i < 10; i++) {
+        if (spielfeld[i] == ' ') {
+
+            spielfeld[i] = 'X';
+            if (winCheck('X')) {
+                
+                spielfeld[i] = 'O';
+                return;
+            }
+            else {
+                spielfeld[i] = ' ';
+            }
+        }
+
+
+    }
+
+    // testen ob man die mitte besetzen kann und ob sie leer ist
+    
+    int mitte = rand() % 4;
+    for (int i = 1; i < 10; i++) {
+        if (spielfeld[5] == ' ' && mitte != 1)
+        {
+            spielfeld[5] = 'O';
+            return;
+        }
+    }
+    // Irgendein Spielfeld besetzen
+
+    while (true) {
+
+        int i = rand() % 9 + 1;
+        if (spielfeld[i] == ' ') {
+            
+            spielfeld[i] = 'O';
+            return;
+        }
+    }
+
+ }
+
+
+
+
+
+// Die main schleife
+
+
+int main()
+{
+    
+    menu();
+
+    return 0;
+}
